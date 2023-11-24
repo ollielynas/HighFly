@@ -1,7 +1,10 @@
 use std::time::{Duration, Instant};
 
-use tauri::async_runtime::RwLock;
+use parking_lot::RwLock;
 
+pub enum InputType {
+    PhoneAccelerometer
+}
 
 pub struct AppState(pub RwLock<InnerAppState>);
 
@@ -15,7 +18,9 @@ pub fn run() {
             start_timing, 
             stop_timing_early, 
             hit_tramp, 
-            leave_tramp
+            leave_tramp,
+            graph_data,
+            number_data,
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -28,6 +33,7 @@ pub struct InnerAppState {
     pub is_timing: bool,
     pub last_left_tramp: Instant,
     pub last_hit_tramp: Instant,
+    pub input_type: InputType,
     
 }
 
@@ -36,6 +42,13 @@ impl InnerAppState {
     
     pub fn timer_value(&self) -> Duration {
         self.last_hit_tramp.saturating_duration_since(self.last_left_tramp)
+    }
+    pub fn total_time(&self) -> Duration {
+        let mut total = self.timer_value();
+        for i in &self.timing_data {
+            total += *i;
+        }
+        return total;
     }
 
 }
@@ -47,21 +60,62 @@ impl Default for InnerAppState {
             jump_number:0,
             is_timing: false,
             last_hit_tramp: Instant::now(),
+            input_type: InputType::PhoneAccelerometer,
         }
+    }
+}
+
+
+
+#[tauri::command]
+fn graph_data(state: tauri::State<AppState>) -> String {
+    let state_guard = state.0.read();
+    return state_guard.timing_data.iter().map(|x| format!("{:.2}, ", x.as_secs_f32())).collect();
+    
+}
+#[tauri::command]
+fn number_data(state: tauri::State<AppState>) -> [f32;3] {
+    let state_guard = state.0.read();
+    return [
+        state_guard.timer_value().as_secs_f32(),
+        state_guard.total_time().as_secs_f32(),
+        state_guard.jump_number as f32,
+
+    ];
+}
+
+#[tauri::command]
+fn start_timing(state: tauri::State<AppState>) {
+    let mut state_guard = state.0.write();
+    state_guard.timing_data = vec![];
+    state_guard.is_timing = true;
+    state_guard.jump_number = 0;
+}
+
+#[tauri::command]
+fn stop_timing_early(state: tauri::State<AppState>) {
+    let mut state_guard = state.0.write();
+    state_guard.is_timing = false;
+
+}
+
+#[tauri::command]
+fn hit_tramp(state: tauri::State<'_, AppState>) {
+    let mut state_guard = state.0.write();
+    state_guard.last_hit_tramp = Instant::now();
+    if state_guard.is_timing {
+        let jump_duration = state_guard.timer_value();
+        state_guard.jump_number += 1;
+        state_guard.timing_data.push(jump_duration);
+        if state_guard.jump_number >= 10 {
+            drop(state_guard);
+            stop_timing_early(state);
         }
+    }
 }
 
-
-
 #[tauri::command]
-fn start_timing() {
-}
-#[tauri::command]
-fn stop_timing_early() {
-}
-#[tauri::command]
-fn hit_tramp() {
-}
-#[tauri::command]
-fn leave_tramp() {
+fn leave_tramp(state: tauri::State<AppState>) {
+    let mut state_guard = state.0.write();
+    state_guard.last_left_tramp = Instant::now();
 }
