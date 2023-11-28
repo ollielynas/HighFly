@@ -3,7 +3,8 @@ use std::time::{Duration, Instant};
 use parking_lot::RwLock;
 
 pub enum InputType {
-    PhoneAccelerometer
+    PhoneAccelerometer,
+    None,
 }
 
 pub struct AppState(pub RwLock<InnerAppState>);
@@ -40,11 +41,12 @@ pub struct InnerAppState {
 impl InnerAppState {
     pub fn is_in_air(&self) -> bool {self.last_hit_tramp.saturating_duration_since(self.last_left_tramp).is_zero()}
     
+    /// value of timer for current jump
     pub fn timer_value(&self) -> Duration {
-        self.last_hit_tramp.saturating_duration_since(self.last_left_tramp)
+        Instant::now().saturating_duration_since(self.last_left_tramp)
     }
     pub fn total_time(&self) -> Duration {
-        let mut total = self.timer_value();
+        let mut total = Duration::default();
         for i in &self.timing_data {
             total += *i;
         }
@@ -70,7 +72,37 @@ impl Default for InnerAppState {
 #[tauri::command]
 fn graph_data(state: tauri::State<AppState>) -> String {
     let state_guard = state.0.read();
-    return state_guard.timing_data.iter().map(|x| format!("{:.2}, ", x.as_secs_f32())).collect();
+    let max = state_guard.timing_data.iter().map(|x| x.as_millis()).max().unwrap_or(0) as f32 / 1000.0;
+    match state_guard.input_type {
+        _ => {
+            return format!(
+                "<svg class='bar-graph' viewBox='0 0 370 190'>
+                <g class='data' data-setname='Our first data set'>{}</g>
+                <polyline
+     fill='none'
+     stroke='#0074d9'
+     stroke-width='2'
+     points='{}'/>
+                </svg>",
+                state_guard.timing_data.iter().enumerate().map(|(i,x)| {
+                    format!("
+                    <circle cx='{}' cy='{}' data-value='{}' r='4'></circle>
+                    "
+                    ,
+                    (i+1)*37,
+                    190.0 -  (x.as_secs_f32()/max) * 100.0, x.as_secs_f32())
+
+            }).collect::<String>(),
+                state_guard.timing_data.iter().enumerate().map(|(i,x)| {
+                    format!("{},{} "
+                    ,
+                    (i+1)*37,
+                    190.0 -  (x.as_secs_f32()/max) * 100.0)
+
+            }).collect::<String>(),
+            );
+        }
+    }
     
 }
 #[tauri::command]
@@ -96,15 +128,14 @@ fn start_timing(state: tauri::State<AppState>) {
 fn stop_timing_early(state: tauri::State<AppState>) {
     let mut state_guard = state.0.write();
     state_guard.is_timing = false;
-
 }
 
 #[tauri::command]
 fn hit_tramp(state: tauri::State<'_, AppState>) {
     let mut state_guard = state.0.write();
     state_guard.last_hit_tramp = Instant::now();
+    let jump_duration = state_guard.timer_value();
     if state_guard.is_timing {
-        let jump_duration = state_guard.timer_value();
         state_guard.jump_number += 1;
         state_guard.timing_data.push(jump_duration);
         if state_guard.jump_number >= 10 {

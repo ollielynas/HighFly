@@ -14,6 +14,12 @@
   -webkit-text-size-adjust: 100%;
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: none;
+}
+
 .container {
   margin: 0;
   padding-top: 5vh;
@@ -22,6 +28,20 @@
   justify-content: center;
   text-align: center;
   align-items: center;
+  overflow: scroll;
+}
+
+@media (orientation: landscape) {
+  body {
+    flex-direction: row;
+    flex-flow: row;
+  }
+  .container {
+    height: 90dvh;
+    margin: 0;
+    flex-basis: 50%;
+    /* width: 100%; */
+  }
 }
 
 .row {
@@ -33,7 +53,13 @@
 .graph {
   width: 90dvw;
   height: 40dvw;
-  border: black 1px solid;
+}
+
+@media (orientation: landscape) {
+  .graph {
+    width: 60dvw;
+    height: 90dvh;
+  }
 }
 
 .numbers {
@@ -104,5 +130,34 @@ transform: translate(2.5px, 2.5px);
 }
 
 .extra-buttons > svg {
-  height: 15dvw;
+  height: 3em;
+}
+
+.bar-graph {
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+}
+
+
+
+circle {
+  transition: scale 1s;
+  fill: darkgrey;
+}
+circle[data-value='0'] {
+  scale: 1 0.0;
+}
+circle:not([data-value='0']) {
+  scale: 1 1.0;
+}
+
+circle:hover {
+  fill: black;
+
+}
+
+.bar {
+  background-color: rgba(0, 128, 0, 0.318);  
 }
