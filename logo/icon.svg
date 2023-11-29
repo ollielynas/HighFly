@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1024" height="1024" viewBox="0 0 1024 1024" xml:space="preserve">
+<desc>Created with Fabric.js 3.6.6</desc>
+<defs>
+</defs>
+<g transform="matrix(3.71 0 0 3.71 522.76 502.04)"  >
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(236,74,48); fill-rule: nonzero; opacity: 1;"  transform=" translate(-128, -120)" d="M 128 44 a 96 96 0 1 0 96 96 A 96.11 96.11 0 0 0 128 44 Z m 0 168 a 72 72 0 1 1 72 -72 A 72.08 72.08 0 0 1 128 212 Z M 164.49 99.51 a 12 12 0 0 1 0 17 l -28 28 a 12 12 0 0 1 -17 -17 l 28 -28 A 12 12 0 0 1 164.49 99.51 Z M 92 16 A 12 12 0 0 1 104 4 h 48 a 12 12 0 0 1 0 24 H 104 A 12 12 0 0 1 92 16 Z" stroke-linecap="round" />
+</g>
+<g transform="matrix(1 0 0 1 595.64 136.73)"  >
+<path style="stroke: rgb(0,0,0); stroke-width: 1; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;"  transform=" translate(-595.64, -136.73)" d="M 595.6353063370899 136.72726421513852 L 595.6373063370899 136.72726421513852" stroke-linecap="round" />
+</g>
+<g transform="matrix(1.47 0 0 1.47 290.86 705.19)"  >
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;"  transform=" translate(-128, -124.28)" d="M 160 40 a 32 32 0 1 0 -32 32 A 32 32 0 0 0 160 40 Z M 128 56 a 16 16 0 1 1 16 -16 A 16 16 0 0 1 128 56 Z m 90.34 78.05 L 173.17 82.83 a 32 32 0 0 0 -24 -10.83 H 106.83 a 32 32 0 0 0 -24 10.83 L 37.66 134.05 a 20 20 0 0 0 28.13 28.43 l 16.3 -13.08 L 65.55 212.28 A 20 20 0 0 0 102 228.8 l 26 -44.87 l 26 44.87 a 20 20 0 0 0 36.41 -16.52 L 173.91 149.4 l 16.3 13.08 a 20 20 0 0 0 28.13 -28.43 Z m -11.51 16.77 a 4 4 0 0 1 -5.66 0 c -0.21 -0.2 -0.42 -0.4 -0.65 -0.58 L 165 121.76 A 8 8 0 0 0 152.26 130 L 175.14 217 a 7.72 7.72 0 0 0 0.48 1.35 a 4 4 0 1 1 -7.25 3.38 a 6.25 6.25 0 0 0 -0.33 -0.63 L 134.92 164 a 8 8 0 0 0 -13.84 0 L 88 221.05 a 6.25 6.25 0 0 0 -0.33 0.63 a 4 4 0 0 1 -2.26 2.07 a 4 4 0 0 1 -5 -5.45 a 7.72 7.72 0 0 0 0.48 -1.35 L 103.74 130 A 8 8 0 0 0 91 121.76 L 55.48 150.24 c -0.23 0.18 -0.44 0.38 -0.65 0.58 a 4 4 0 1 1 -5.66 -5.65 c 0.12 -0.12 0.23 -0.24 0.34 -0.37 L 94.83 93.41 a 16 16 0 0 1 12 -5.41 h 42.34 a 16 16 0 0 1 12 5.41 l 45.32 51.39 c 0.11 0.13 0.22 0.25 0.34 0.37 A 4 4 0 0 1 206.83 150.82 Z" stroke-linecap="round" />
+</g>
+</svg>
