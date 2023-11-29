@@ -22,6 +22,7 @@ pub fn run() {
             leave_tramp,
             graph_data,
             number_data,
+            set_timer,
             ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -35,6 +36,7 @@ pub struct InnerAppState {
     pub last_left_tramp: Instant,
     pub last_hit_tramp: Instant,
     pub input_type: InputType,
+    pub timer: i32,
     
 }
 
@@ -63,6 +65,7 @@ impl Default for InnerAppState {
             is_timing: false,
             last_hit_tramp: Instant::now(),
             input_type: InputType::PhoneAccelerometer,
+            timer: 0,
         }
     }
 }
@@ -117,11 +120,16 @@ fn number_data(state: tauri::State<AppState>) -> [f32;3] {
 }
 
 #[tauri::command]
+fn set_timer(state: tauri::State<AppState>, timer_value: i32) {
+    let mut state_guard = state.0.write();
+    state_guard.timer = timer_value;
+}
+#[tauri::command]
 fn start_timing(state: tauri::State<AppState>) {
     let mut state_guard = state.0.write();
     state_guard.timing_data = vec![];
     state_guard.is_timing = true;
-    state_guard.jump_number = 0;
+    state_guard.jump_number = -state_guard.timer;
 }
 
 #[tauri::command]
@@ -140,7 +148,9 @@ fn hit_tramp(state: tauri::State<'_, AppState>) {
     state_guard.last_hit_tramp = Instant::now();
     if state_guard.is_timing {
         state_guard.jump_number += 1;
-        state_guard.timing_data.push(jump_duration);
+        if state_guard.jump_number > 0 {
+            state_guard.timing_data.push(jump_duration);
+        }
         if state_guard.jump_number >= 10 {
             drop(state_guard);
             stop_timing_early(state);

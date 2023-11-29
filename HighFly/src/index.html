@@ -41,7 +41,11 @@
       </details>
         <details>
           <summary>Timer</summary>
-          <p id="g_force_readout">r</p>
+          <div class="row timer-input" id="timer-input-box">
+            <button onclick="this.parentNode.querySelector('#timer-value').stepDown()">-</button>
+            <input id = "timer-value" type="number" id="quantity" name="quantity" min="0" max="25">
+            <button onclick="this.parentNode.querySelector('#timer-value').stepUp()">+</button>
+        </div>
       </details>
     </div>
     <script></script>

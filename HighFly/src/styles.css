@@ -28,7 +28,6 @@ body {
   justify-content: center;
   text-align: center;
   align-items: center;
-  overflow: scroll;
 }
 
 @media (orientation: landscape) {
@@ -193,4 +192,21 @@ summary {
 
 p {
   width: fit-content;
+}
+
+.timer-input {
+  align-items: center;
+  justify-content: space-around;
+  margin: 0.5em;
+  background-color: rgb(214, 214, 214);
+
+}
+.timer-input * {
+font-size: 1.5em;
+border: none;
+padding: 1em;
+background-color: rgb(214, 214, 214);
+}
+.timer-input input {
+pointer-events: none;
 }

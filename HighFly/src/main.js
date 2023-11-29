@@ -11,6 +11,18 @@ window.addEventListener("DOMContentLoaded", () => {
   elem1 = document.getElementById("jump-time");
   elem2 = document.getElementById("total-time");
   elem3 = document.getElementById("jump-number");
+
+  document
+    .getElementById("timer-input-box")
+    .addEventListener("click", async () => {
+      let value = parseInt(document.getElementById("timer-value").value);
+      if (typeof value == "undefined") {
+        value = 0;
+      }
+      await invoke("set_timer", {
+        timerValue: value,
+      });
+    });
 });
 
 if (window.DeviceMotionEvent) {
@@ -70,6 +82,9 @@ button.addEventListener("mousedown", async () => {
 button.addEventListener("mouseup", async () => {
   await leave_tramp();
 });
+
+
+
 
 async function update_graph() {
   invoke("graph_data")
