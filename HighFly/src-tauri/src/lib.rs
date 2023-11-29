@@ -133,8 +133,11 @@ fn stop_timing_early(state: tauri::State<AppState>) {
 #[tauri::command]
 fn hit_tramp(state: tauri::State<'_, AppState>) {
     let mut state_guard = state.0.write();
+    let jump_duration = Instant::now().saturating_duration_since(state_guard.last_left_tramp);
+    if jump_duration.as_secs_f32() <= 0.8 {
+        return;
+    }
     state_guard.last_hit_tramp = Instant::now();
-    let jump_duration = state_guard.timer_value();
     if state_guard.is_timing {
         state_guard.jump_number += 1;
         state_guard.timing_data.push(jump_duration);

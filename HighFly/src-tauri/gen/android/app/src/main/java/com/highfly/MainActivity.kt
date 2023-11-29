@@ -1,3 +1,3 @@
-package com.tauri.highfly
+package com.highfly
 
 class MainActivity : TauriActivity()
