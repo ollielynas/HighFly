@@ -161,3 +161,36 @@ circle:hover {
 .bar {
   background-color: rgba(0, 128, 0, 0.318);  
 }
+
+
+details:not([open]) {
+  /* background-color: darkgray; */
+  padding: 0em;
+}
+details[open] ~ * {
+  
+}
+
+details {
+  width: 80%;
+  display: flex;
+  align-items: baseline;
+  justify-content: left;
+  margin-top: 1em;
+  /* background-color: rgba(169, 169, 169, 0.345); */
+}
+
+summary {
+  display: flex;
+  /* width: fit-content; */
+  align-items: baseline;
+  justify-content: center;
+  background-color: rgb(155, 189, 227);
+  padding: 0.5em;
+  font-size: larger;
+  /* width: ; */
+}
+
+p {
+  width: fit-content;
+}
