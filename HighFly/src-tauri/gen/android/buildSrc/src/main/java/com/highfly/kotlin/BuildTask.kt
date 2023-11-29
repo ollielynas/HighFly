@@ -1,4 +1,5 @@
 import java.io.File
+import java.lang.System
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -16,7 +17,8 @@ open class BuildTask : DefaultTask() {
 
     @TaskAction
     fun assemble() {
-        val executable = """..\..\..\..\..\..\.cargo\bin\cargo-tauri.exe""";
+        //TODO: Make this work across devices
+        val executable = System.getProperty("user.home") + "/.cargo/bin/cargo-tauri.exe"
         try {
             runTauriCli(executable)
         } catch (e: Exception) {
