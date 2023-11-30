@@ -141,20 +141,8 @@ transform: translate(2.5px, 2.5px);
 
 
 
-circle {
-  transition: scale 1s;
+.datapoint {
   fill: darkgrey;
-}
-circle[data-value='0'] {
-  scale: 1 0.0;
-}
-circle:not([data-value='0']) {
-  scale: 1 1.0;
-}
-
-circle:hover {
-  fill: black;
-
 }
 
 .bar {

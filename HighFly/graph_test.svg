@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="370" height="190" viewBox="-5 -5 375 195" xml:space="preserve">
+	<g>
+		<line x1="51" y1="5" x2="35" y2="5" style="stroke:black;stroke-width:1px;" />
+		<line x1="51" y1="95" x2="35" y2="95" style="stroke:black;stroke-width:1px;" />
+		<line x1="51" y1="185" x2="35" y2="185" style="stroke:black;stroke-width:1px;" />
+
+		<text x="30" y="5" fill="black" text-anchor="end" dominant-baseline="middle">1.0</text>
+		<text x="30" y="95" fill="black" text-anchor="end" dominant-baseline="middle">0.5</text>
+		<text x="30" y="185" fill="black" text-anchor="end" dominant-baseline="middle">0.0</text>
+
+		<line x1="50" y1="23" x2="40" y2="23" style="stroke:gray;stroke-width:1px;" />
+		<line x1="50" y1="41" x2="40" y2="41" style="stroke:gray;stroke-width:1px;" />
+		<line x1="50" y1="59" x2="40" y2="59" style="stroke:gray;stroke-width:1px;" />
+		<line x1="50" y1="77" x2="40" y2="77" style="stroke:gray;stroke-width:1px;" />
+
+		<line x1="50" y1="113" x2="40" y2="113" style="stroke:gray;stroke-width:1px;" />
+		<line x1="50" y1="131" x2="40" y2="131" style="stroke:gray;stroke-width:1px;" />
+		<line x1="50" y1="149" x2="40" y2="149" style="stroke:gray;stroke-width:1px;" />
+		<line x1="50" y1="167" x2="40" y2="167" style="stroke:gray;stroke-width:1px;" />
+
+		<polyline points="50,5 50,185 365,185" style="stroke:black;stroke-width:2px;fill:none;"/>
+	</g>
+</svg>
