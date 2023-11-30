@@ -71,42 +71,76 @@ impl Default for InnerAppState {
 }
 
 
-
 #[tauri::command]
 fn graph_data(state: tauri::State<AppState>) -> String {
     let state_guard = state.0.read();
-    let max = state_guard.timing_data.iter().map(|x| x.as_millis()).max().unwrap_or(0) as f32 / 1000.0;
-    match state_guard.input_type {
-        _ => {
-            return format!(
-                "<svg class='bar-graph' viewBox='0 0 370 190'>
-                <g class='data' data-setname='Our first data set'>{}</g>
-                <polyline
-     fill='none'
-     stroke='#0074d9'
-     stroke-width='2'
-     points='{}'/>
-                </svg>",
-                state_guard.timing_data.iter().enumerate().map(|(i,x)| {
-                    format!("
-                    <circle cx='{}' cy='{}' data-value='{}' r='4'></circle>
-                    "
-                    ,
-                    (i+1)*37,
-                    190.0 -  (x.as_secs_f32()/max) * 100.0, x.as_secs_f32())
+    let millis: Vec<_> = state_guard.timing_data.iter().map(|x| x.as_millis()).collect();
 
-            }).collect::<String>(),
-                state_guard.timing_data.iter().enumerate().map(|(i,x)| {
-                    format!("{},{} "
-                    ,
-                    (i+1)*37,
-                    190.0 -  (x.as_secs_f32()/max) * 100.0)
+    let max = *millis.iter().max().unwrap_or(&0) as f32 / 1000.0;
+    let min = *millis.iter().min().unwrap_or(&0) as f32 / 1000.0;
 
-            }).collect::<String>(),
-            );
+    const BASE_SMALL_SCALE: f32 = 0.1;
+    const PER_LARGE_TICK: u32 = 5;
+    
+    let mut small_scale = BASE_SMALL_SCALE;
+    let mut large_scale = small_scale * PER_LARGE_TICK as f32;
+
+    while max / large_scale > 5.0 {
+        small_scale *= 2.0;
+        large_scale *= 2.0;
+    }
+
+    let num_large_ticks = 2.max(1 + (max / large_scale).ceil() as u32);
+
+    let num_ticks = PER_LARGE_TICK * (num_large_ticks - 1);
+    let scale_max = (num_large_ticks - 1) as f32 * large_scale;
+
+    let mut svg = String::new();
+
+    svg.push_str("<svg class='bar-graph' viewBox='0 0 370 190'>");
+
+    for i in 0..=num_ticks {
+        let y = 180.0 - (170.0 / num_ticks as f32) * i as f32;
+
+        if i % PER_LARGE_TICK == 0 {
+            let val = i as f32 * small_scale;
+
+            svg.push_str(&format!("<line x1='35' y1='{y}' x2='51' y2='{y}' style='stroke:black;stroke-width:1px;'/>"));
+            svg.push_str(&format!("<text x='30' y='{y}' fill='black' text-anchor='end' dominant-baseline='middle'>{val:.1}</text>"));
+        } else {
+            svg.push_str(&format!("<line x1='50' y1='{y}' x2='40' y2='{y}' style='stroke:gray;stroke-width:1px;' />"));
         }
     }
+
+    svg.push_str("<polyline points='50,10 50,180 370,180' style='stroke:black;stroke-width:2px;fill:none;'/>");
+
+    let y_min = 180.0 - 170.0 * (min / scale_max);
+    let y_max = 180.0 - 170.0 * (max / scale_max);
+
+    svg.push_str(&format!("<line x1='50' y1='{y_min}' x2='370' y2='{y_min}' stroke='gray' stroke-width='1px' stroke-dasharray='5,5'/>"));
+    svg.push_str(&format!("<line x1='50' y1='{y_max}' x2='370' y2='{y_max}' stroke='gray' stroke-width='1px' stroke-dasharray='5,5'/>"));
+
+    let mut points = vec![];
+
+    for (i, millis) in millis.iter().enumerate() {
+        let x = 60.0 + (300.0 / 9.0) * i as f32;
+        let y = 180.0 - 170.0 * (*millis as f32 / 1000.0 / scale_max);
+
+        points.push((x, y));
+    }
+
+    for (x, y) in &points {
+        svg.push_str(&format!("<circle cx='{x}' cy = '{y}' r='4' class='datapoint'/>"));
+    }
+
+    svg.push_str(&format!(
+        "<polyline fill='none' stroke='#0074d9' stroke-width='2' points='{}'",
+        points.iter().map(|(x, y)| format!("{x},{y}")).collect::<Vec<_>>().join(" ")
+    ));
+
+    svg.push_str("</svg>");
     
+    return svg;
 }
 #[tauri::command]
 fn number_data(state: tauri::State<AppState>) -> [f32;3] {

@@ -136,5 +136,5 @@ document.getElementById("start").addEventListener("click", async () => {
   console.log("start");
 });
 
-setInterval(update, 200);
+setInterval(update, 50);
 setInterval(update_graph, 1000);
