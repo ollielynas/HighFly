@@ -101,10 +101,9 @@ fn graph_data(state: tauri::State<AppState>) -> String {
 
     for i in 0..=num_ticks {
         let y = 180.0 - (170.0 / num_ticks as f32) * i as f32;
+        let val = i as f32 * small_scale;
 
         if i % PER_LARGE_TICK == 0 {
-            let val = i as f32 * small_scale;
-
             svg.push_str(&format!("<line x1='35' y1='{y}' x2='51' y2='{y}' style='stroke:black;stroke-width:1px;'/>"));
             svg.push_str(&format!("<text x='30' y='{y}' fill='black' text-anchor='end' dominant-baseline='middle'>{val:.1}</text>"));
         } else {
@@ -134,9 +133,12 @@ fn graph_data(state: tauri::State<AppState>) -> String {
     }
 
     svg.push_str(&format!(
-        "<polyline fill='none' stroke='#0074d9' stroke-width='2' points='{}'",
+        "<polyline fill='none' stroke='#0074d9' stroke-width='2' points='{}'/>",
         points.iter().map(|(x, y)| format!("{x},{y}")).collect::<Vec<_>>().join(" ")
     ));
+
+    svg.push_str(&format!("<text x='370' y='{y_min}' fill='gray' text-anchor='end' transform='translate(0,-8)'>{min:.2}</text>"));
+    svg.push_str(&format!("<text x='370' y='{y_max}' fill='gray' text-anchor='end' transform='translate(0,20)'>{max:.2}</text>"));
 
     svg.push_str("</svg>");
     
