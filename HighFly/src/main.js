@@ -1,6 +1,5 @@
 
 const { invoke } = window.__TAURI__.primitives;
-import { Store } from "@tauri-apps/plugin-store";
 
 let greetInputEl;
 let greetMsgEl;
@@ -145,11 +144,4 @@ await update_graph();
 
 
 
-const store = new Store(".settings.dat");
-
-await store.set("some-key", { value: 5 });
-
-const val = await store.get("some-key");
-assert(val, { value: 5 });
-
-await store.save(); 
+await invoke("fs_test")

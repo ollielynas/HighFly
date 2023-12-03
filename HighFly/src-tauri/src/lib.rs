@@ -1,13 +1,16 @@
-use std::{time::{Duration, Instant}, path::PathBuf};
-use tauri_plugin_store::with_store;
 use parking_lot::RwLock;
+use std::{
+    path::{PathBuf, Path},
+    time::{Duration, Instant}, fs::File,
+};
+use tauri_plugin_store::with_store;
 
 pub mod saved_data;
 
 use saved_data::*;
+use serde_json::{json, Value};
 use tauri::{Manager, Wry};
 use tauri_plugin_store::{StoreBuilder, StoreCollection};
-use serde_json::json;
 
 pub enum InputType {
     PhoneAccelerometer,
@@ -24,31 +27,30 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .invoke_handler(tauri::generate_handler![
-            start_timing, 
-            stop_timing_early, 
-            hit_tramp, 
+            start_timing,
+            stop_timing_early,
+            hit_tramp,
             leave_tramp,
             graph_data,
             number_data,
             set_timer,
-            ])
+            fs_test
+        ])
         .setup(|app| {
-            
             // let mut store = StoreBuilder::new(".store.bin").build(app.handle().clone());
             // println!("{:?}", store.keys().count());
-            
+
             let stores = app.state::<StoreCollection<Wry>>();
             let path = PathBuf::from("path/to/the/storefile");
-        
-            with_store(app.handle().clone(), stores, path, |store| store.insert("a".to_string(), json!("b")))?;
+
+            with_store(app.handle().clone(), stores, path, |store| {
+                store.insert("a".to_string(), json!("b"))
+            })?;
             Ok(()) // note that values must be serd_json::Value to be compatible with JS
-            
         })
-        
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
 
 pub struct InnerAppState {
     pub timing_data: Vec<Duration>,
@@ -58,12 +60,15 @@ pub struct InnerAppState {
     pub last_hit_tramp: Instant,
     pub input_type: InputType,
     pub timer: i32,
-    
 }
 
 impl InnerAppState {
-    pub fn is_in_air(&self) -> bool {self.last_hit_tramp.saturating_duration_since(self.last_left_tramp).is_zero()}
-    
+    pub fn is_in_air(&self) -> bool {
+        self.last_hit_tramp
+            .saturating_duration_since(self.last_left_tramp)
+            .is_zero()
+    }
+
     /// value of timer for current jump
     pub fn timer_value(&self) -> Duration {
         Instant::now().saturating_duration_since(self.last_left_tramp)
@@ -75,14 +80,13 @@ impl InnerAppState {
         }
         return total;
     }
-
 }
 impl Default for InnerAppState {
     fn default() -> Self {
         InnerAppState {
             last_left_tramp: Instant::now(),
             timing_data: vec![],
-            jump_number:0,
+            jump_number: 0,
             is_timing: false,
             last_hit_tramp: Instant::now(),
             input_type: InputType::PhoneAccelerometer,
@@ -91,21 +95,21 @@ impl Default for InnerAppState {
     }
 }
 
-
-
-
 #[tauri::command]
 fn graph_data(state: tauri::State<AppState>) -> String {
     let state_guard = state.0.read();
-    let millis: Vec<_> = state_guard.timing_data.iter().map(|x| x.as_millis()).collect();
+    let millis: Vec<_> = state_guard
+        .timing_data
+        .iter()
+        .map(|x| x.as_millis())
+        .collect();
 
     let max = *millis.iter().max().unwrap_or(&0) as f32 / 1000.0;
     let min = *millis.iter().min().unwrap_or(&0) as f32 / 1000.0;
 
-
     const BASE_SMALL_SCALE: f32 = 0.1;
     const PER_LARGE_TICK: u32 = 5;
-    
+
     let mut small_scale = BASE_SMALL_SCALE;
     let mut large_scale = small_scale * PER_LARGE_TICK as f32;
 
@@ -128,10 +132,14 @@ fn graph_data(state: tauri::State<AppState>) -> String {
         let val = i as f32 * small_scale;
 
         if i % PER_LARGE_TICK == 0 {
-            svg.push_str(&format!("<line x1='35' y1='{y}' x2='51' y2='{y}' style='stroke:black;stroke-width:1px;'/>"));
+            svg.push_str(&format!(
+                "<line x1='35' y1='{y}' x2='51' y2='{y}' style='stroke:black;stroke-width:1px;'/>"
+            ));
             svg.push_str(&format!("<text x='30' y='{y}' fill='black' text-anchor='end' dominant-baseline='middle'>{val:.1}</text>"));
         } else {
-            svg.push_str(&format!("<line x1='50' y1='{y}' x2='40' y2='{y}' style='stroke:gray;stroke-width:1px;' />"));
+            svg.push_str(&format!(
+                "<line x1='50' y1='{y}' x2='40' y2='{y}' style='stroke:gray;stroke-width:1px;' />"
+            ));
         }
     }
 
@@ -139,8 +147,6 @@ fn graph_data(state: tauri::State<AppState>) -> String {
 
     let y_min = 180.0 - 170.0 * (min / scale_max);
     let y_max = 180.0 - 170.0 * (max / scale_max);
-
-
 
     svg.push_str(&format!("<line x1='50' y1='{y_min}' x2='370' y2='{y_min}' stroke='gray' stroke-width='1px' stroke-dasharray='5,5'/>"));
     svg.push_str(&format!("<line x1='50' y1='{y_max}' x2='370' y2='{y_max}' stroke='gray' stroke-width='1px' stroke-dasharray='5,5'/>"));
@@ -155,32 +161,35 @@ fn graph_data(state: tauri::State<AppState>) -> String {
     }
 
     for (x, y) in &points {
-        svg.push_str(&format!("<circle cx='{x}' cy = '{y}' r='4' class='datapoint'/>"));
+        svg.push_str(&format!(
+            "<circle cx='{x}' cy = '{y}' r='4' class='datapoint'/>"
+        ));
     }
 
     svg.push_str(&format!(
         "<polyline fill='none' stroke='#0074d9' stroke-width='2' points='{}'/>",
-        points.iter().map(|(x, y)| format!("{x},{y}")).collect::<Vec<_>>().join(" ")
+        points
+            .iter()
+            .map(|(x, y)| format!("{x},{y}"))
+            .collect::<Vec<_>>()
+            .join(" ")
     ));
-
 
     svg.push_str(&format!("<text x='370' y='{y_min}' fill='gray' text-anchor='end' transform='translate(0,-8)'>{min:.2}</text>"));
     svg.push_str(&format!("<text x='370' y='{y_max}' fill='gray' text-anchor='end' transform='translate(0,20)'>{max:.2}</text>"));
 
     svg.push_str("</svg>");
-    
+
     return svg;
 }
 
-
 #[tauri::command]
-fn number_data(state: tauri::State<AppState>) -> [f32;3] {
+fn number_data(state: tauri::State<AppState>) -> [f32; 3] {
     let state_guard = state.0.read();
     return [
         state_guard.timer_value().as_secs_f32(),
         state_guard.total_time().as_secs_f32(),
         state_guard.jump_number as f32,
-
     ];
 }
 
@@ -227,4 +236,41 @@ fn hit_tramp(state: tauri::State<'_, AppState>) {
 fn leave_tramp(state: tauri::State<AppState>) {
     let mut state_guard = state.0.write();
     state_guard.last_left_tramp = Instant::now();
+}
+
+#[tauri::command]
+fn fs_test(state: tauri::State<AppState>) {
+    let save_directory = if cfg!(target_os = "android") {
+        "/data/data/com.highfly/"
+    } else {
+        "./../data/"
+    };
+
+    let save_directory = Path::new(save_directory);
+    let savefile = save_directory.join("save.json");
+
+    if !savefile.exists() {
+
+        let parent_dir = savefile.parent().unwrap();
+
+        if !parent_dir.exists() {
+            std::fs::create_dir_all(parent_dir).unwrap();
+        }
+    }
+
+
+    let file = File::create(&savefile).unwrap();
+
+    let test_object = json!({
+        "a": 1,
+        "b": 2
+    });
+
+    serde_json::to_writer(file, &test_object).unwrap();
+
+    
+    let file = File::open(&savefile).unwrap();
+    let recovered: Value = serde_json::from_reader(file).unwrap();
+
+    assert_eq!(test_object, recovered);
 }
