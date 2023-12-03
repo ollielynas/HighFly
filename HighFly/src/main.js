@@ -1,4 +1,6 @@
+
 const { invoke } = window.__TAURI__.primitives;
+import { Store } from "@tauri-apps/plugin-store";
 
 let greetInputEl;
 let greetMsgEl;
@@ -93,7 +95,8 @@ async function update_graph() {
       var elem = document.getElementById("graph");
       if (
         typeof elem != "undefined" &&
-        document.getElementById("start").style.display == "none"
+        (document.getElementById("start").style.display == "none" ||
+          elem.innerHTML=="...")
       ) {
         elem.innerHTML = response;
       }
@@ -138,3 +141,15 @@ document.getElementById("start").addEventListener("click", async () => {
 
 setInterval(update, 50);
 setInterval(update_graph, 1000);
+await update_graph();
+
+
+
+const store = new Store(".settings.dat");
+
+await store.set("some-key", { value: 5 });
+
+const val = await store.get("some-key");
+assert(val, { value: 5 });
+
+await store.save(); 

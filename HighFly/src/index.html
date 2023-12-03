@@ -9,7 +9,7 @@
   </head>
 
   <body>
-    <div id="graph" class="graph">graph placeholder</div>
+    <div id="graph" class="graph">...</div>
     <div class="container">
       <div class="row numbers">
         <p id="jump-time">0.00</p>
@@ -47,7 +47,13 @@
             <button onclick="this.parentNode.querySelector('#timer-value').stepUp()">+</button>
         </div>
       </details>
+      <details>
+          <summary>Save</summary>
+          <div class="row">Name: <input placeholder="optional"></input></div>
+          <div class="row">routine: <input placeholder = "optional"></input></div>
+          <button>Save</button>
+        </details>
     </div>
-    <script></script>
+    <br>
   </body>
 </html>

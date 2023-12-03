@@ -1,6 +1,13 @@
-use std::time::{Duration, Instant};
-
+use std::{time::{Duration, Instant}, path::PathBuf};
+use tauri_plugin_store::with_store;
 use parking_lot::RwLock;
+
+pub mod saved_data;
+
+use saved_data::*;
+use tauri::{Manager, Wry};
+use tauri_plugin_store::{StoreBuilder, StoreCollection};
+use serde_json::json;
 
 pub enum InputType {
     PhoneAccelerometer,
@@ -12,9 +19,10 @@ pub struct AppState(pub RwLock<InnerAppState>);
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-            .manage(AppState(RwLock::new(InnerAppState::default())))
+        .manage(AppState(RwLock::new(InnerAppState::default())))
         .plugin(tauri_plugin_window::init())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_store::Builder::default().build())
         .invoke_handler(tauri::generate_handler![
             start_timing, 
             stop_timing_early, 
@@ -24,6 +32,19 @@ pub fn run() {
             number_data,
             set_timer,
             ])
+        .setup(|app| {
+            
+            // let mut store = StoreBuilder::new(".store.bin").build(app.handle().clone());
+            // println!("{:?}", store.keys().count());
+            
+            let stores = app.state::<StoreCollection<Wry>>();
+            let path = PathBuf::from("path/to/the/storefile");
+        
+            with_store(app.handle().clone(), stores, path, |store| store.insert("a".to_string(), json!("b")))?;
+            Ok(()) // note that values must be serd_json::Value to be compatible with JS
+            
+        })
+        
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -71,6 +92,8 @@ impl Default for InnerAppState {
 }
 
 
+
+
 #[tauri::command]
 fn graph_data(state: tauri::State<AppState>) -> String {
     let state_guard = state.0.read();
@@ -78,6 +101,7 @@ fn graph_data(state: tauri::State<AppState>) -> String {
 
     let max = *millis.iter().max().unwrap_or(&0) as f32 / 1000.0;
     let min = *millis.iter().min().unwrap_or(&0) as f32 / 1000.0;
+
 
     const BASE_SMALL_SCALE: f32 = 0.1;
     const PER_LARGE_TICK: u32 = 5;
@@ -116,6 +140,8 @@ fn graph_data(state: tauri::State<AppState>) -> String {
     let y_min = 180.0 - 170.0 * (min / scale_max);
     let y_max = 180.0 - 170.0 * (max / scale_max);
 
+
+
     svg.push_str(&format!("<line x1='50' y1='{y_min}' x2='370' y2='{y_min}' stroke='gray' stroke-width='1px' stroke-dasharray='5,5'/>"));
     svg.push_str(&format!("<line x1='50' y1='{y_max}' x2='370' y2='{y_max}' stroke='gray' stroke-width='1px' stroke-dasharray='5,5'/>"));
 
@@ -137,6 +163,7 @@ fn graph_data(state: tauri::State<AppState>) -> String {
         points.iter().map(|(x, y)| format!("{x},{y}")).collect::<Vec<_>>().join(" ")
     ));
 
+
     svg.push_str(&format!("<text x='370' y='{y_min}' fill='gray' text-anchor='end' transform='translate(0,-8)'>{min:.2}</text>"));
     svg.push_str(&format!("<text x='370' y='{y_max}' fill='gray' text-anchor='end' transform='translate(0,20)'>{max:.2}</text>"));
 
@@ -144,6 +171,8 @@ fn graph_data(state: tauri::State<AppState>) -> String {
     
     return svg;
 }
+
+
 #[tauri::command]
 fn number_data(state: tauri::State<AppState>) -> [f32;3] {
     let state_guard = state.0.read();
@@ -178,7 +207,7 @@ fn stop_timing_early(state: tauri::State<AppState>) {
 fn hit_tramp(state: tauri::State<'_, AppState>) {
     let mut state_guard = state.0.write();
     let jump_duration = Instant::now().saturating_duration_since(state_guard.last_left_tramp);
-    if jump_duration.as_secs_f32() <= 0.8 {
+    if jump_duration.as_secs_f32() <= 0.5 {
         return;
     }
     state_guard.last_hit_tramp = Instant::now();
