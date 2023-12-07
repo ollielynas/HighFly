@@ -32,7 +32,8 @@
         "resizable": true,
         "title": "highfly",
         "width": 400,
-        "height": 600
+        "height": 600,
+        "additionalBrowserArgs":"--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --enable-experimental-web-platform-features=enabled"
       }
     ]
   },

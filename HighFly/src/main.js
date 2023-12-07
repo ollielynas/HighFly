@@ -24,6 +24,40 @@ window.addEventListener("DOMContentLoaded", () => {
         timerValue: value,
       });
     });
+  document
+    .getElementById("connect-to-bluetooth")
+    .addEventListener("click", async () => {
+      navigator.bluetooth
+        .requestDevice({ filters: [{ services: ["battery_service"] }] })
+        .then(async (device) => {
+          /* … */
+          await device.gatt.connect();
+          let primaryService = await device.gatt.getPrimaryService("0000180f-0000-1000-8000-00805f9b34fb")
+          let characteristic = await primaryService.getCharacteristic("00002a56-0000-1000-8000-00805f9b34fb")
+          console.log(characteristic);
+
+          characteristic.addEventListener("characteristicvaluechanged", async (event) => {
+            let value = event.target.value;
+            let on_tramp = value.getUint8(0);
+            let timestamp = value.getInt32(4, true);
+
+            console.log(on_tramp, timestamp);
+
+            if (on_tramp == 1) {
+              await hit_tramp();
+            }else {
+              await leave_tramp();
+            }
+            
+          });
+
+          await characteristic.startNotifications();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+    });
 });
 
 if (window.DeviceMotionEvent) {
@@ -145,3 +179,4 @@ await update_graph();
 
 
 await invoke("fs_test")
+
