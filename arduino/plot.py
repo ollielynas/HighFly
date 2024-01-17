@@ -9,7 +9,7 @@ data[0] = [(data[1][i] * data[1][i] + data[2][i] * data[2][i] + data[3][i] * dat
 
 data = np.array(data)
 
-kernel_size = 10
+kernel_size = 8
 kernel = np.ones(kernel_size) / kernel_size
 
 data_convolved = np.array([np.convolve(d, kernel, mode='same') for d in data])

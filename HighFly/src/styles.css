@@ -5,7 +5,7 @@
   font-weight: 400;
 
   color: #0f0f0f;
-  background-color: #f6f6f6;
+  background-color: whitesmoke;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -129,7 +129,7 @@ transform: translate(2.5px, 2.5px);
 }
 
 .extra-buttons > svg {
-  height: 3em;
+  height: 2em;
 }
 
 .bar-graph {
@@ -194,4 +194,43 @@ background-color: rgb(214, 214, 214);
 }
 .timer-input input {
 pointer-events: none;
+}
+
+
+.nav-buttons {
+  position: fixed;
+  height: 20vw;
+  width: 100vw;
+  left: 0;
+  bottom: 0em;
+  padding-bottom: 0.2em;
+  padding-top: 0.4em;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: rgb(240, 240, 240);
+  border-top: #a7a7a7b6 2px solid;
+}
+.nav-buttons  svg {
+  height: 10vw;
+}
+
+.gray-button svg {
+  color: rgb(37, 37, 37);
+}
+
+dialog {
+  border: 1px solid gray;
+  border-radius: 0.5em;
+    z-index: 10;
+    outline: 100em rgba(0, 0, 0, 0.199) solid;
+}
+
+
+.black-svg {
+  color: black;
+}
+
+.orange-svg {
+  color: orange;
 }
