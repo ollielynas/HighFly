@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>HighFly Video Recorder</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='index.css'>
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class = "container">
+        <div class="videoContainer">
+            <video id="video-tag" muted >
+                <source id="video-source" src="splashVideo">
+                Your browser does not support the video tag.
+            </video>
+            <hr>
+            <label class="custom-file-upload">
+        <input type="file" accept="video/*" id="input-tag"/>
+            <i class="ph ph-upload"></i>
+            upload video
+        </label>
+    </div>
+    <div class="controls">
+        <div class="button row">
+            <button class="add" onclick="clickJump()"><i class="ph ph-plus"></i></button>
+            <button onclick="delButton()" class="del"><i class="ph ph-trash"></i></button>
+        
+        </div>
+        <div class="not-row slider">
+            <div class="timestamp"></div>
+            <div class="on-off-indecator"></div>
+        </div>
+        <div class="red-line"></div>
+        <div class="data not-row">
+                <p id="video-time">0.0</p>
+                <p style="color:yellow" id="total-time">TOF: 0.0</p>
+            </div>
+    </div>
+</div>
+<script src='main.js'></script>
+</body>
+</html>

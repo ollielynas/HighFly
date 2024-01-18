@@ -19,7 +19,7 @@ android {
         applicationId = "com.highfly"
         minSdk = 24
         targetSdk = 33
-        versionCode = 2
+        versionCode = 3
         versionName = "1.1"
     }
     signingConfigs {
