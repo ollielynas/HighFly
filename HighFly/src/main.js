@@ -11,6 +11,8 @@ var dialog;
 
 var has_bluetooth = false;
 
+let body;
+
 
 function gained_bluetooth() {
   document.getElementById("bluetooth-button").innerHTML = '<svg id="has-bluetooth" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"/><polygon points="120 32 184 80 120 128 120 32" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><polygon points="120 128 184 176 120 224 120 128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><line x1="56" y1="80" x2="120" y2="128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><line x1="56" y1="176" x2="120" y2="128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>'
@@ -25,6 +27,9 @@ window.lost_bluetooth = lost_bluetooth;
 
 
 window.addEventListener("DOMContentLoaded", () => {
+
+  body = document.body;
+
   lost_bluetooth();
   elem1 = document.getElementById("jump-time");
   elem2 = document.getElementById("total-time");
@@ -243,6 +248,9 @@ function switch_ui(self, name) {
     // document.querySelector("#"+button[i].id+ " svg").className = "black-svg";
   }
   document.querySelector("#"+name).style.display = "flex";
+
+  body.setAttribute("state", name);
+
   // document.querySelector("#" + self.id + " svg").s = "orange-svg";
 }
 
